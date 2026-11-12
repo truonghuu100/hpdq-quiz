@@ -26,3 +26,7 @@
 @media(max-width:900px){.live-admin-grid{grid-template-columns:1fr}.question-options{grid-template-columns:1fr}}
 
 .leaderboard-panel{margin-top:18px;padding:18px;border:1px solid #dce9df;border-radius:14px;background:#f8fbf8}.leaderboard-panel h3{margin:0 0 12px;color:#16472e}.leaderboard-row{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:11px 8px;border-top:1px solid #e4ece6}.leaderboard-row strong{color:#176b3b}.countdown{font-variant-numeric:tabular-nums}.countdown.urgent{color:#c34420;background:#fff0e8}
+
+/* Admin controls for collapsing the join QR stage banner */
+.live-top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lobby-toggle{white-space:nowrap}.live-top{align-items:center}.live-admin-grid{margin-top:16px}.live-top-actions .btn{min-height:38px}
+@media(max-width:600px){.live-top-actions{width:100%}.live-top-actions .btn{flex:1}}
