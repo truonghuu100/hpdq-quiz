@@ -16,5 +16,5 @@ export const HPDQFirebase={
  async createRoom(room){const u=await ensureAuth();await set(ref(db,`rooms/${room.code}`),{name:room.name,ownerUid:u.uid,started:false,createdAt:serverTimestamp(),participants:{}})},
  async joinRoom(code,name){const u=await ensureAuth(),r=ref(db,`rooms/${code}`),s=await get(r);if(!s.exists())throw Error("Mã phòng không tồn tại hoặc đã đóng");if(s.child("started").val())throw Error("Cuộc thi đã bắt đầu");if(s.child("participants").numChildren()>=300&&!s.child(`participants/${u.uid}`).exists())throw Error("Phòng đã đủ 300 người");await set(ref(db,`rooms/${code}/participants/${u.uid}`),{name,joinedAt:serverTimestamp()})},
  async setStarted(code,started){await ensureAuth();await update(ref(db,`rooms/${code}`),{started})},
- watchRoom(code,callback){ensureAuth().then(()=>onValue(ref(db,`rooms/${code}`),s=>{if(s.exists())callback(s.val())})).catch(console.error)}
+ watchRoom(code,callback,onError=console.error){ensureAuth().then(()=>onValue(ref(db,`rooms/${code}`),s=>{if(s.exists())callback(s.val());else onError(new Error("Phòng không còn tồn tại"))},onError)).catch(onError)}
 };
