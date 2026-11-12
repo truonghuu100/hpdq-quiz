@@ -30,7 +30,13 @@ export const HPDQFirebase={
     if(!saved?.participantId)throw new Error("Không tìm thấy phiên tham gia.");
     return request("/room/"+encodeURIComponent(code)+"/participant/"+saved.participantId+"/answer",{method:"POST",body:JSON.stringify({answerIndex})});
   },
-  async setAction(code,action){\n    const rooms=await request("/admin/rooms",{auth:true});\n    const room=rooms.rooms.find(x=>x.code===String(code));\n    if(!room)throw new Error("Không tìm thấy phòng thi.");\n    return request("/admin/rooms/"+room.id+"/action",{method:"POST",auth:true,body:JSON.stringify({action})});\n  },\n  async setStarted(code,started){
+  async setAction(code,action){
+    const rooms=await request("/admin/rooms",{auth:true});
+    const room=rooms.rooms.find(x=>x.code===String(code));
+    if(!room)throw new Error("Không tìm thấy phòng thi.");
+    return request("/admin/rooms/"+room.id+"/action",{method:"POST",auth:true,body:JSON.stringify({action})});
+  },
+  async setStarted(code,started){
     const rooms=await request("/admin/rooms",{auth:true});
     const room=rooms.rooms.find(x=>x.code===String(code));
     if(!room)throw new Error("Không tìm thấy phòng thi.");
