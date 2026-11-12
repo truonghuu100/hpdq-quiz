@@ -4,7 +4,7 @@ const params=new URLSearchParams(location.search);
 const initialCode=(params.get("room")||"").replace(/\D/g,"").slice(0,6);
 $("room-code").value=initialCode;
 if(initialCode){$("room-code").readOnly=true;$("intro").textContent="Bạn được mời tham gia phòng "+initialCode+". Nhập họ tên để vào phòng chờ."}
-let joined=false,lastState="",answerBusy=false;
+let joined=false,lastState="",answerBusy=false,activeQuestion=null,questionStartedAt=0,guestClock=null;
 function showQuestion(data){
  const q=data.question;
  if(!q)return;
@@ -45,7 +45,7 @@ $("join-form").addEventListener("submit",async e=>{
   $("intro").textContent="Chào "+name+". Hãy giữ màn hình này để nhận câu hỏi.";
   $("join-form").style.display="none";$("message").textContent="✓ Tham gia thành công · Mã phòng "+code;
   HPDQFirebase.watchGuestRoom(code,data=>{
-   if(data.question)showQuestion(data);
+   if(data.question){if(data.status!==lastState||Number(data.question.number)!==Number(activeQuestion?.number))showQuestion(data);else{questionStartedAt=Number(data.questionStartedAt||questionStartedAt);}}
    else if(data.status==="question"){$("title").textContent="Cuộc thi đã bắt đầu";$("intro").textContent="Đang tải câu hỏi…"}
   },err=>{$("message").textContent=err.message||"Mất kết nối tới phòng thi."});
  }catch(err){$("join-btn").disabled=false;$("message").textContent=err.message||"Không thể tham gia phòng thi."}
