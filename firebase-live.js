@@ -12,5 +12,6 @@ async logoutAdmin(){await signOut(auth)},
 async createRoom(room){const u=await admin();await set(ref(db,"rooms/"+room.code),{name:room.name,ownerUid:u.uid,started:false,createdAt:serverTimestamp(),participants:{}})},
 async joinRoom(code,name){const u=await guestAuth(),r=ref(db,"rooms/"+code),s=await get(r);if(!s.exists())throw Error("Mã phòng không tồn tại hoặc đã đóng");if(s.child("started").val())throw Error("Cuộc thi đã bắt đầu");if(s.child("participants").numChildren()>=300&&!s.child("participants/"+u.uid).exists())throw Error("Phòng đã đủ 300 người");await set(ref(db,"rooms/"+code+"/participants/"+u.uid),{name,joinedAt:serverTimestamp()})},
 async setStarted(code,started){await admin();await update(ref(db,"rooms/"+code),{started})},
-watchRoom(code,cb,err=console.error){admin().then(()=>onValue(ref(db,"rooms/"+code),s=>s.exists()?cb(s.val()):err(new Error("Phòng không còn tồn tại")),err)).catch(err)}
+watchRoom(code,cb,err=console.error){admin().then(()=>onValue(ref(db,"rooms/"+code),s=>s.exists()?cb(s.val()):err(new Error("Phòng không còn tồn tại")),err)).catch(err)},
+watchGuestRoom(code,cb,err=console.error){guestAuth().then(()=>onValue(ref(db,"rooms/"+code),s=>s.exists()?cb(s.val()):err(new Error("Phòng không còn tồn tại")),err)).catch(err)}
 };
