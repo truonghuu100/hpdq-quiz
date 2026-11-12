@@ -7,7 +7,7 @@ async function guestAuth(){if(auth.currentUser)return auth.currentUser;if(!guest
 async function admin(){const u=auth.currentUser;if(!u||u.isAnonymous)throw Error("Vui lòng đăng nhập tài khoản Admin.");const s=await get(ref(db,"admins/"+u.uid));if(s.val()!==true)throw Error("Chưa được cấp quyền Admin. UID: "+u.uid);return u}
 export const HPDQFirebase={
 watchAdminAuth(cb){return onAuthStateChanged(auth,async u=>{if(!u||u.isAnonymous){cb({user:null,isAdmin:false});return}try{const s=await get(ref(db,"admins/"+u.uid));cb({user:u,isAdmin:s.val()===true,uid:u.uid})}catch(error){cb({user:u,isAdmin:false,uid:u.uid,error})}})},
-async loginAdmin(email,password){const c=await signInWithEmailAndPassword(auth,email,password);const s=await get(ref(db,"admins/"+c.user.uid));return {uid:c.user.uid,isAdmin:s.val()===true}},
+async loginAdmin(username,password){if(username.trim().toLowerCase()!=="admin")throw Error("Tên đăng nhập không hợp lệ.");const c=await signInWithEmailAndPassword(auth,"admin@hpdq-quiz.local",password);const s=await get(ref(db,"admins/"+c.user.uid));return {uid:c.user.uid,isAdmin:s.val()===true}},
 async logoutAdmin(){await signOut(auth)},
 async createRoom(room){const u=await admin();await set(ref(db,"rooms/"+room.code),{name:room.name,ownerUid:u.uid,started:false,createdAt:serverTimestamp(),participants:{}})},
 async joinRoom(code,name){const u=await guestAuth(),r=ref(db,"rooms/"+code),s=await get(r);if(!s.exists())throw Error("Mã phòng không tồn tại hoặc đã đóng");if(s.child("started").val())throw Error("Cuộc thi đã bắt đầu");if(s.child("participants").numChildren()>=300&&!s.child("participants/"+u.uid).exists())throw Error("Phòng đã đủ 300 người");await set(ref(db,"rooms/"+code+"/participants/"+u.uid),{name,joinedAt:serverTimestamp()})},
