@@ -64,7 +64,7 @@ export const HPDQFirebase={
     const poll=async()=>{
       try{
         const data=await request("/room/"+encodeURIComponent(code)+"/participant/"+saved.participantId);
-        cb({started:["question","revealed"].includes(data.room.status),status:data.room.status,question:data.question,participant:data.participant});
+        cb({started:["question","revealed"].includes(data.room.status),status:data.room.status,question:data.question,participant:data.participant,questionStartedAt:data.room.questionStartedAt});
       }catch(e){if(active)err(e);}
     };
     poll();const timer=setInterval(()=>{if(active)poll();},2500);
