@@ -85,3 +85,22 @@ header{border-color:#e0eaf3}
 .countdown.urgent{color:#c34420;background:#fff0e8}
 @media(max-width:900px){.lobby-qr-stage{grid-template-columns:1fr;gap:22px;min-height:0}.lobby-qr-stage .lobby-qr{width:min(100%,440px)}.lobby-attendee-list{max-height:280px}}
 @media(max-width:600px){.lobby-qr-stage{padding:18px}.lobby-qr-stage .lobby-qr{width:min(88vw,430px)}}
+
+
+/* FINAL CACHE-BUSTED HPDQ BLUE LOBBY OVERRIDES */
+.lobby-qr-stage{
+  display:grid !important;
+  grid-template-columns:minmax(300px,.9fr) minmax(380px,1.1fr) !important;
+  background:linear-gradient(120deg,#003f78 0%,#005baa 58%,#1684ce 100%) !important;
+  color:#fff !important;
+}
+.lobby-qr-stage .lobby-attendees{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  min-height:260px;
+}
+.lobby-qr-stage .lobby-attendee-empty{color:#fff !important}
+@media(max-width:900px){
+  .lobby-qr-stage{grid-template-columns:1fr !important}
+}
