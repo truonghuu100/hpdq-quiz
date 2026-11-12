@@ -1,5 +1,6 @@
 const API = "https://trainhpdq.onrender.com/api/quiz";
 let adminToken = sessionStorage.getItem("hpdqQuizAdminToken") || "";
+const roomIds = new Map();
 const headers = (auth=false) => ({ "Content-Type":"application/json", ...(auth && adminToken ? {Authorization:"Bearer "+adminToken} : {}) });
 async function request(path, options={}) {
   const res=await fetch(API+path,{...options,headers:{...headers(!!options.auth),...(options.headers||{})}});
@@ -17,13 +18,18 @@ export const HPDQFirebase={
   async logoutAdmin(){adminToken="";sessionStorage.removeItem("hpdqQuizAdminToken");},
   async createRoom(room){
     const data=await request("/admin/rooms",{method:"POST",auth:true,body:JSON.stringify({title:room.name})});
+    roomIds.set(String(data.room.code),data.room.id);
     return {id:data.room.id,code:data.room.code,name:data.room.title};
   },
+  async startQuestion(code,question){
+    let id=roomIds.get(String(code));
+    if(!id){const rooms=await request("/admin/rooms",{auth:true});const room=rooms.rooms.find(x=>x.code===String(code));if(!room)throw new Error("Không tìm thấy phòng thi.");id=room.id;roomIds.set(String(code),id);}
+    return request("/admin/rooms/"+id+"/start-question",{method:"POST",auth:true,body:JSON.stringify(question)});
+  },
   async setQuestion(code,question){
-    const rooms=await request("/admin/rooms",{auth:true});
-    const room=rooms.rooms.find(x=>x.code===String(code));
-    if(!room)throw new Error("Không tìm thấy phòng thi.");
-    return request("/admin/rooms/"+room.id+"/question",{method:"POST",auth:true,body:JSON.stringify(question)});
+    let id=roomIds.get(String(code));
+    if(!id){const rooms=await request("/admin/rooms",{auth:true});const room=rooms.rooms.find(x=>x.code===String(code));if(!room)throw new Error("Không tìm thấy phòng thi.");id=room.id;roomIds.set(String(code),id);}
+    return request("/admin/rooms/"+id+"/question",{method:"POST",auth:true,body:JSON.stringify(question)});
   },
   async answerQuestion(code,answerIndex){
     const saved=JSON.parse(localStorage.getItem("hpdqQuizGuest:"+code)||"null");
@@ -31,10 +37,9 @@ export const HPDQFirebase={
     return request("/room/"+encodeURIComponent(code)+"/participant/"+saved.participantId+"/answer",{method:"POST",body:JSON.stringify({answerIndex})});
   },
   async setAction(code,action){
-    const rooms=await request("/admin/rooms",{auth:true});
-    const room=rooms.rooms.find(x=>x.code===String(code));
-    if(!room)throw new Error("Không tìm thấy phòng thi.");
-    return request("/admin/rooms/"+room.id+"/action",{method:"POST",auth:true,body:JSON.stringify({action})});
+    let id=roomIds.get(String(code));
+    if(!id){const rooms=await request("/admin/rooms",{auth:true});const room=rooms.rooms.find(x=>x.code===String(code));if(!room)throw new Error("Không tìm thấy phòng thi.");id=room.id;roomIds.set(String(code),id);}
+    return request("/admin/rooms/"+id+"/action",{method:"POST",auth:true,body:JSON.stringify({action})});
   },
   async setStarted(code,started){
     const rooms=await request("/admin/rooms",{auth:true});
@@ -44,18 +49,19 @@ export const HPDQFirebase={
   },
   watchRoom(code,cb,err=console.error){
     let active=true;
+    let polling=false;
     const poll=async()=>{
+      if(polling||!active)return;polling=true;
       try{
-        const list=await request("/admin/rooms",{auth:true});
-        const room=list.rooms.find(x=>x.code===String(code));
-        if(!room)throw new Error("Phòng thi không tồn tại.");
-        const detail=await request("/admin/rooms/"+room.id,{auth:true});
+        let id=roomIds.get(String(code));
+        if(!id){const list=await request("/admin/rooms",{auth:true});const room=list.rooms.find(x=>x.code===String(code));if(!room)throw new Error("Phòng thi không tồn tại.");id=room.id;roomIds.set(String(code),id);}
+        const detail=await request("/admin/rooms/"+id,{auth:true});
         const participants={};
         (detail.participants||[]).forEach(p=>participants[p.id]=p);
         cb({started:["question","revealed"].includes(detail.room.status),status:detail.room.status,participants,room:detail.room,question:detail.room.question,questionStartedAt:detail.room.questionStartedAt});
-      }catch(e){if(active)err(e);}
+      }catch(e){if(active)err(e);}finally{polling=false;}
     };
-    poll();const timer=setInterval(()=>{if(active)poll();},2500);
+    poll();const timer=setInterval(()=>{if(active)poll();},1500);
     return ()=>{active=false;clearInterval(timer);};
   },
   async joinRoom(code,name){
@@ -67,13 +73,15 @@ export const HPDQFirebase={
     let active=true;
     const saved=JSON.parse(localStorage.getItem("hpdqQuizGuest:"+code)||"null");
     if(!saved?.participantId){err(new Error("Không tìm thấy phiên tham gia. Vui lòng vào phòng lại."));return ()=>{};}
+    let polling=false;
     const poll=async()=>{
+      if(polling||!active)return;polling=true;
       try{
         const data=await request("/room/"+encodeURIComponent(code)+"/participant/"+saved.participantId);
         cb({started:["question","revealed"].includes(data.room.status),status:data.room.status,question:data.question,participant:data.participant,questionStartedAt:data.room.questionStartedAt});
-      }catch(e){if(active)err(e);}
+      }catch(e){if(active)err(e);}finally{polling=false;}
     };
-    poll();const timer=setInterval(()=>{if(active)poll();},2500);
+    poll();const timer=setInterval(()=>{if(active)poll();},1500);
     return ()=>{active=false;clearInterval(timer);};
   }
 };
