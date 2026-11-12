@@ -104,3 +104,17 @@ header{border-color:#e0eaf3}
 @media(max-width:900px){
   .lobby-qr-stage{grid-template-columns:1fr !important}
 }
+
+
+/* Header declutter: logout lives in the left admin sidebar */
+header{justify-content:flex-start}
+.side-bottom{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.side-admin-label{font-size:11px;font-weight:600;color:#fff}
+.side-logout{width:100%;text-align:center;background:#ffffff18;color:#fff;border:1px solid #ffffff35;padding:10px 12px}
+.side-logout:hover{background:#ffffff2b}
+@media(max-width:600px){
+  .side-bottom{display:flex}
+  .side-logout{width:auto;align-self:flex-start}
+}
+/* Keep the QR card clean: QR code and title only */
+.lobby-qr-stage .lobby-qr small{display:none!important}
