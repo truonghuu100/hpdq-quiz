@@ -125,3 +125,24 @@ main{padding-bottom:42px}
 main>footer{position:fixed;left:250px;right:0;bottom:0;z-index:30;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.96);border-top:1px solid #dce7f0;color:#52718a;padding:0 12px;font-size:10px;backdrop-filter:blur(8px)}
 .layout.sidebar-collapsed main>footer{left:72px}
 @media(max-width:600px){main{padding-bottom:38px}main>footer{left:0;height:36px;font-size:9px}}
+
+
+/* Live quiz ranking stage */
+.live-admin-grid{grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);align-items:stretch}
+.ranking-placeholder{min-height:460px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;border:2px dashed #c8dced;border-radius:16px;background:#f8fbfe;text-align:center;padding:28px;color:#6b849a}
+.ranking-placeholder p{font-size:12px;margin:0;max-width:250px;line-height:1.6}
+.btn.blue{background:#005baa;color:white}.btn.blue:hover{background:#003f78}
+.live-ranking{padding:22px;background:linear-gradient(160deg,#fff 0%,#f1f7fd 100%);border:1px solid #d5e5f4;min-width:0}
+.live-ranking h2{font-size:23px;color:#064d86;margin:8px 0}.ranking-sub{font-size:11px;color:#71869a;margin:0 0 18px;line-height:1.5}
+.rank-card{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 12px;margin:9px 0;border-radius:13px;background:white;border:1px solid #dce7f0;box-shadow:0 3px 12px #174b7410}
+.rank-medal{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:19px;font-weight:900;background:#eaf1f7;color:#567087}
+.rank-person{min-width:0;display:flex;flex-direction:column;gap:4px}.rank-person b{font-size:13px;color:#203c54;overflow-wrap:anywhere}.rank-person small{font-size:10px;color:#7b8fa1}
+.rank-card>strong{font-size:15px;color:#174c78;white-space:nowrap}.rank-card>strong small{font-size:9px;font-weight:500}
+.rank-card.rank-1{background:linear-gradient(100deg,#fff9df,#fff);border:2px solid #e6bd42;box-shadow:0 5px 18px #d9a91e25}.rank-1 .rank-medal{background:linear-gradient(145deg,#ffe98b,#d69a10);color:#704900}.rank-1 .rank-person b{color:#8b5b00}
+.rank-card.rank-2{background:linear-gradient(100deg,#f1f4f7,#fff);border:2px solid #b8c4cf}.rank-2 .rank-medal{background:linear-gradient(145deg,#fff,#aebbc8);color:#455766}
+.rank-card.rank-3{background:linear-gradient(100deg,#fff1e6,#fff);border:2px solid #c88a58}.rank-3 .rank-medal{background:linear-gradient(145deg,#f4c29b,#a75d2e);color:#63320f}
+.ranking-empty{text-align:center;padding:50px 12px;color:#73879a;font-size:12px}
+.quiz-fireworks{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}
+.firework-piece{position:absolute;left:var(--x);top:var(--y);width:7px;height:13px;border-radius:2px;background:hsl(var(--hue),95%,58%);opacity:0;animation:firework-pop 1.65s ease-out var(--delay) 3 both;box-shadow:0 0 9px hsl(var(--hue),95%,65%)}
+@keyframes firework-pop{0%{opacity:0;transform:translate(0,25px) scale(.2) rotate(0)}12%{opacity:1}100%{opacity:0;transform:translate(calc((var(--x) - 50vw)*.16),-170px) scale(1) rotate(520deg)}}
+@media(max-width:900px){.live-admin-grid{grid-template-columns:1fr}.ranking-placeholder{min-height:180px}}
