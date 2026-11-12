@@ -24,3 +24,5 @@
 .answer-stat-track{height:8px;background:#edf2ee;border-radius:10px;overflow:hidden}.answer-stat-track i{display:block;height:100%;background:#239354;border-radius:10px}
 .live-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.live-actions .btn{flex:1;min-width:150px}
 @media(max-width:900px){.live-admin-grid{grid-template-columns:1fr}.question-options{grid-template-columns:1fr}}
+
+.leaderboard-panel{margin-top:18px;padding:18px;border:1px solid #dce9df;border-radius:14px;background:#f8fbf8}.leaderboard-panel h3{margin:0 0 12px;color:#16472e}.leaderboard-row{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:11px 8px;border-top:1px solid #e4ece6}.leaderboard-row strong{color:#176b3b}.countdown{font-variant-numeric:tabular-nums}.countdown.urgent{color:#c34420;background:#fff0e8}
