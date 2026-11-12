@@ -23,3 +23,7 @@ Tạo Static Site, repository `truonghuu100/hpdq-quiz`, branch `main`, build com
 - Không gửi đáp án đúng tới trình duyệt trước công bố.
 - Dùng đồng hồ máy chủ, không tin thời gian do trình duyệt người chơi gửi.
 - Giới hạn phòng ở 300 học viên và kiểm thử tải 300 kết nối đồng thời.
+
+
+## Firebase setup
+Xem `FIREBASE_SETUP.md`, `firebase-config.example.js` và `database.rules.json`. Không có Firebase project nào được tự tạo từ repository; cần tạo project và cung cấp web app config trong Firebase Console.
