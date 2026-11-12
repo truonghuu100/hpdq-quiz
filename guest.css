@@ -3,3 +3,4 @@
 .answer-option{width:100%;padding:15px;text-align:left;border:1px solid #d9e5dc;border-radius:12px;background:#f7faf7;color:#173d2b;font:inherit;font-weight:600;cursor:pointer}
 .answer-option:disabled{opacity:.75;cursor:default}
 .answer-option.selected{border-color:#16834a;background:#e4f4e9}
+.guest-countdown{margin:12px 0;padding:13px;border-radius:12px;background:#edf7ef;color:#176b3b;text-align:center;font-weight:800;font-size:19px}.guest-countdown:empty{display:none}\n
