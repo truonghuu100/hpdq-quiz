@@ -118,3 +118,10 @@ header{justify-content:flex-start}
 }
 /* Keep the QR card clean: QR code and title only */
 .lobby-qr-stage .lobby-qr small{display:none!important}
+
+
+/* Fixed copyright footer */
+main{padding-bottom:42px}
+main>footer{position:fixed;left:250px;right:0;bottom:0;z-index:30;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.96);border-top:1px solid #dce7f0;color:#52718a;padding:0 12px;font-size:10px;backdrop-filter:blur(8px)}
+.layout.sidebar-collapsed main>footer{left:72px}
+@media(max-width:600px){main{padding-bottom:38px}main>footer{left:0;height:36px;font-size:9px}}
