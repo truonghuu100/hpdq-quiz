@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: hpdq-quiz
+    runtime: static
+    staticPublishPath: .
+    buildCommand: ""
