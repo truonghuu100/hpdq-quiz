@@ -17,7 +17,7 @@ export const HPDQFirebase={
   },
   async logoutAdmin(){adminToken="";sessionStorage.removeItem("hpdqQuizAdminToken");},
   async createRoom(room){
-    const data=await request("/admin/rooms",{method:"POST",auth:true,body:JSON.stringify({title:room.name})});
+    const data=await request("/admin/rooms",{method:"POST",auth:true,body:JSON.stringify({title:room.name,rankingSettings:room.rankingSettings||{roundTop:10,finalTop:3}})});
     roomIds.set(String(data.room.code),data.room.id);
     return {id:data.room.id,code:data.room.code,name:data.room.title};
   },
