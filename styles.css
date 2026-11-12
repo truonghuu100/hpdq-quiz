@@ -30,3 +30,6 @@
 /* Admin controls for collapsing the join QR stage banner */
 .live-top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lobby-toggle{white-space:nowrap}.live-top{align-items:center}.live-admin-grid{margin-top:16px}.live-top-actions .btn{min-height:38px}
 @media(max-width:600px){.live-top-actions{width:100%}.live-top-actions .btn{flex:1}}
+
+/* Collapsible admin navigation */
+.header-left{display:flex;align-items:center;gap:13px}.sidebar-toggle{width:32px;height:32px;border:0;border-radius:8px;background:#edf3ef;color:#24543a;cursor:pointer;font-size:16px}.layout.sidebar-collapsed .side{width:72px;padding-left:10px;padding-right:10px}.layout.sidebar-collapsed main{margin-left:72px}.layout.sidebar-collapsed .logo{padding-left:5px;padding-right:5px}.layout.sidebar-collapsed .logo span,.layout.sidebar-collapsed .caption,.layout.sidebar-collapsed .side-bottom{display:none}.layout.sidebar-collapsed nav button{font-size:0;text-align:center;padding:13px 4px}.layout.sidebar-collapsed nav button::first-letter{font-size:17px}@media(max-width:600px){.layout.sidebar-collapsed .side{width:auto}.layout.sidebar-collapsed main{margin:0}.layout.sidebar-collapsed .logo span{display:block}.layout.sidebar-collapsed nav button{font-size:12px}}
