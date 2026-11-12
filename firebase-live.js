@@ -8,7 +8,7 @@ async function request(path, options={}) {
   return data;
 }
 export const HPDQFirebase={
-  watchAdminAuth(cb){cb({user:adminToken?{username:"admin"}:null,isAdmin:!!adminToken});return ()=>{};},
+  watchAdminAuth(cb){window.addEventListener("hpdq-quiz-token",e=>{adminToken=e.detail||"";cb({user:adminToken?{username:"admin"}:null,isAdmin:!!adminToken});});cb({user:adminToken?{username:"admin"}:null,isAdmin:!!adminToken});return ()=>{};},
   async loginAdmin(username,password){
     const data=await request("/admin/login",{method:"POST",body:JSON.stringify({username,password})});
     adminToken=data.token;sessionStorage.setItem("hpdqQuizAdminToken",adminToken);
