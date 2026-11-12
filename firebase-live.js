@@ -19,6 +19,17 @@ export const HPDQFirebase={
     const data=await request("/admin/rooms",{method:"POST",auth:true,body:JSON.stringify({title:room.name})});
     return {id:data.room.id,code:data.room.code,name:data.room.title};
   },
+  async setQuestion(code,question){
+    const rooms=await request("/admin/rooms",{auth:true});
+    const room=rooms.rooms.find(x=>x.code===String(code));
+    if(!room)throw new Error("Không tìm thấy phòng thi.");
+    return request("/admin/rooms/"+room.id+"/question",{method:"POST",auth:true,body:JSON.stringify(question)});
+  },
+  async answerQuestion(code,answerIndex){
+    const saved=JSON.parse(localStorage.getItem("hpdqQuizGuest:"+code)||"null");
+    if(!saved?.participantId)throw new Error("Không tìm thấy phiên tham gia.");
+    return request("/room/"+encodeURIComponent(code)+"/participant/"+saved.participantId+"/answer",{method:"POST",body:JSON.stringify({answerIndex})});
+  },
   async setStarted(code,started){
     const rooms=await request("/admin/rooms",{auth:true});
     const room=rooms.rooms.find(x=>x.code===String(code));
