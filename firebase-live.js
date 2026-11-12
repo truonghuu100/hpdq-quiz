@@ -1,17 +1,62 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getDatabase, ref, set, get, onValue, serverTimestamp, update } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
-const firebaseConfig={apiKey:"AIzaSyDvyzV-iQ3GtTaNJ_lpFApWwLG3ipoC7g",authDomain:"hpdq-quiz.firebaseapp.com",databaseURL:"https://hpdq-quiz-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"hpdq-quiz",storageBucket:"hpdq-quiz.firebasestorage.app",messagingSenderId:"767485831120",appId:"1:767485831:web:c28d97d45efc1ec60efbd5",measurementId:"G-N3T7TNRT64"};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);let guestAuthPromise;
-async function guestAuth(){if(auth.currentUser)return auth.currentUser;if(!guestAuthPromise)guestAuthPromise=signInAnonymously(auth).then(x=>x.user).catch(e=>{guestAuthPromise=null;throw e});return guestAuthPromise}
-async function admin(){const u=auth.currentUser;if(!u||u.isAnonymous)throw Error("Vui lòng đăng nhập tài khoản Admin.");const s=await get(ref(db,"admins/"+u.uid));if(s.val()!==true)throw Error("Chưa được cấp quyền Admin. UID: "+u.uid);return u}
+const API = "https://trainhpdq.onrender.com/api/quiz";
+let adminToken = sessionStorage.getItem("hpdqQuizAdminToken") || "";
+const headers = (auth=false) => ({ "Content-Type":"application/json", ...(auth && adminToken ? {Authorization:"Bearer "+adminToken} : {}) });
+async function request(path, options={}) {
+  const res=await fetch(API+path,{...options,headers:{...headers(!!options.auth),...(options.headers||{})}});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error||data.message||("HTTP "+res.status));
+  return data;
+}
 export const HPDQFirebase={
-watchAdminAuth(cb){return onAuthStateChanged(auth,async u=>{if(!u||u.isAnonymous){cb({user:null,isAdmin:false});return}try{const s=await get(ref(db,"admins/"+u.uid));cb({user:u,isAdmin:s.val()===true,uid:u.uid})}catch(error){cb({user:u,isAdmin:false,uid:u.uid,error})}})},
-async loginAdmin(username,password){if(username.trim().toLowerCase()!=="admin")throw Error("Tên đăng nhập không hợp lệ.");const c=await signInWithEmailAndPassword(auth,"admin@hpdq-quiz.local",password);const s=await get(ref(db,"admins/"+c.user.uid));return {uid:c.user.uid,isAdmin:s.val()===true}},
-async logoutAdmin(){await signOut(auth)},
-async createRoom(room){const u=await admin();await set(ref(db,"rooms/"+room.code),{name:room.name,ownerUid:u.uid,started:false,createdAt:serverTimestamp(),participants:{}})},
-async joinRoom(code,name){const u=await guestAuth(),r=ref(db,"rooms/"+code),s=await get(r);if(!s.exists())throw Error("Mã phòng không tồn tại hoặc đã đóng");if(s.child("started").val())throw Error("Cuộc thi đã bắt đầu");if(s.child("participants").numChildren()>=300&&!s.child("participants/"+u.uid).exists())throw Error("Phòng đã đủ 300 người");await set(ref(db,"rooms/"+code+"/participants/"+u.uid),{name,joinedAt:serverTimestamp()})},
-async setStarted(code,started){await admin();await update(ref(db,"rooms/"+code),{started})},
-watchRoom(code,cb,err=console.error){admin().then(()=>onValue(ref(db,"rooms/"+code),s=>s.exists()?cb(s.val()):err(new Error("Phòng không còn tồn tại")),err)).catch(err)},
-watchGuestRoom(code,cb,err=console.error){guestAuth().then(()=>onValue(ref(db,"rooms/"+code),s=>s.exists()?cb(s.val()):err(new Error("Phòng không còn tồn tại")),err)).catch(err)}
+  watchAdminAuth(cb){cb({user:adminToken?{username:"admin"}:null,isAdmin:!!adminToken});return ()=>{};},
+  async loginAdmin(username,password){
+    const data=await request("/admin/login",{method:"POST",body:JSON.stringify({username,password})});
+    adminToken=data.token;sessionStorage.setItem("hpdqQuizAdminToken",adminToken);
+    return {uid:"admin",isAdmin:true};
+  },
+  async logoutAdmin(){adminToken="";sessionStorage.removeItem("hpdqQuizAdminToken");},
+  async createRoom(room){
+    const data=await request("/admin/rooms",{method:"POST",auth:true,body:JSON.stringify({title:room.name})});
+    return {id:data.room.id,code:data.room.code,name:data.room.title};
+  },
+  async setStarted(code,started){
+    const rooms=await request("/admin/rooms",{auth:true});
+    const room=rooms.rooms.find(x=>x.code===String(code));
+    if(!room)throw new Error("Không tìm thấy phòng thi.");
+    return request("/admin/rooms/"+room.id+"/action",{method:"POST",auth:true,body:JSON.stringify({action:started?"start":"stop"})});
+  },
+  watchRoom(code,cb,err=console.error){
+    let active=true;
+    const poll=async()=>{
+      try{
+        const list=await request("/admin/rooms",{auth:true});
+        const room=list.rooms.find(x=>x.code===String(code));
+        if(!room)throw new Error("Phòng thi không tồn tại.");
+        const detail=await request("/admin/rooms/"+room.id,{auth:true});
+        const participants={};
+        (detail.participants||[]).forEach(p=>participants[p.id]=p);
+        cb({started:["question","revealed"].includes(detail.room.status),status:detail.room.status,participants,room:detail.room});
+      }catch(e){if(active)err(e);}
+    };
+    poll();const timer=setInterval(()=>{if(active)poll();},2500);
+    return ()=>{active=false;clearInterval(timer);};
+  },
+  async joinRoom(code,name){
+    const data=await request("/room/"+encodeURIComponent(code)+"/join",{method:"POST",body:JSON.stringify({name})});
+    localStorage.setItem("hpdqQuizGuest:"+code,JSON.stringify({participantId:data.participantId,name:data.name}));
+    return data;
+  },
+  watchGuestRoom(code,cb,err=console.error){
+    let active=true;
+    const saved=JSON.parse(localStorage.getItem("hpdqQuizGuest:"+code)||"null");
+    if(!saved?.participantId){err(new Error("Không tìm thấy phiên tham gia. Vui lòng vào phòng lại."));return ()=>{};}
+    const poll=async()=>{
+      try{
+        const data=await request("/room/"+encodeURIComponent(code)+"/participant/"+saved.participantId);
+        cb({started:["question","revealed"].includes(data.room.status),status:data.room.status,question:data.question,participant:data.participant});
+      }catch(e){if(active)err(e);}
+    };
+    poll();const timer=setInterval(()=>{if(active)poll();},2500);
+    return ()=>{active=false;clearInterval(timer);};
+  }
 };
