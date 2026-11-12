@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#116b3a"><title>HPDQ Quiz | Live Quiz & Examination</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="brand-mark">Q</div><div><strong>HPDQ QUIZ</strong><small>LIVE QUIZ SYSTEM</small></div></div>
+      <div class="nav-caption">KHÔNG GIAN LÀM VIỆC</div>
+      <button class="nav-item active" data-view="dashboard"><span>▦</span> Tổng quan</button>
+      <button class="nav-item" data-view="questions"><span>▤</span> Ngân hàng câu hỏi</button>
+      <button class="nav-item" data-view="quizzes"><span>☷</span> Bộ đề thi</button>
+      <button class="nav-item" data-view="rooms"><span>◉</span> Tổ chức cuộc thi</button>
+      <button class="nav-item" data-view="results"><span>▥</span> Kết quả & báo cáo</button>
+      <div class="sidebar-bottom"><div class="admin-card"><div class="avatar">A</div><div><b>Quản trị viên</b><small>Quyền quản trị</small></div><span class="online-dot"></span></div><small class="version">HPDQ QUIZ · BẢN KHỞI TẠO</small></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><button class="icon-btn mobile-menu" id="mobileMenu">☰</button><div class="breadcrumb">HPDQ Quiz <span>/</span> <b id="crumb">Tổng quan</b></div><div class="top-actions"><span class="status-pill"><i></i> Hệ thống sẵn sàng</span><button class="help-btn" id="helpBtn">? Trợ giúp</button></div></header>
+      <section class="page" id="page"></section>
+      <footer>HPDQ QUIZ <span>•</span> Công cụ tổ chức thi trắc nghiệm nội bộ</footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <dialog id="modal"><form method="dialog" class="modal-card"><div class="modal-head"><h2 id="modalTitle">Thông tin</h2><button class="icon-btn" value="cancel">×</button></div><div id="modalBody"></div><div class="modal-actions"><button class="btn secondary" value="cancel">Đóng</button><button class="btn primary" id="modalConfirm" value="ok">Xác nhận</button></div></form></dialog>
+  <script type="module" src="./app.js"></script>
+</body></html>
