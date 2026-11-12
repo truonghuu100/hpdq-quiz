@@ -30,7 +30,7 @@ export const HPDQFirebase={
     if(!saved?.participantId)throw new Error("Không tìm thấy phiên tham gia.");
     return request("/room/"+encodeURIComponent(code)+"/participant/"+saved.participantId+"/answer",{method:"POST",body:JSON.stringify({answerIndex})});
   },
-  async setStarted(code,started){
+  async setAction(code,action){\n    const rooms=await request("/admin/rooms",{auth:true});\n    const room=rooms.rooms.find(x=>x.code===String(code));\n    if(!room)throw new Error("Không tìm thấy phòng thi.");\n    return request("/admin/rooms/"+room.id+"/action",{method:"POST",auth:true,body:JSON.stringify({action})});\n  },\n  async setStarted(code,started){
     const rooms=await request("/admin/rooms",{auth:true});
     const room=rooms.rooms.find(x=>x.code===String(code));
     if(!room)throw new Error("Không tìm thấy phòng thi.");
@@ -46,7 +46,7 @@ export const HPDQFirebase={
         const detail=await request("/admin/rooms/"+room.id,{auth:true});
         const participants={};
         (detail.participants||[]).forEach(p=>participants[p.id]=p);
-        cb({started:["question","revealed"].includes(detail.room.status),status:detail.room.status,participants,room:detail.room});
+        cb({started:["question","revealed"].includes(detail.room.status),status:detail.room.status,participants,room:detail.room,question:detail.room.question,questionStartedAt:detail.room.questionStartedAt});
       }catch(e){if(active)err(e);}
     };
     poll();const timer=setInterval(()=>{if(active)poll();},2500);
