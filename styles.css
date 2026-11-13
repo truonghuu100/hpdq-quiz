@@ -270,3 +270,13 @@ header{
 
 /* Champion card: remove circular wreath and retain subtle four-corner frame */
 .final-winner.winner-1 .winner-halo,.final-winner.winner-1 .winner-wreath{display:none!important}
+
+/* Final awards: two co-winners for each prize tier */
+.final-award-recipients{position:relative;z-index:3;width:100%;margin-top:8px}
+.final-award-recipient{padding:7px 0 5px;border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 18%,transparent)}
+.final-award-recipient:first-child{border-top:0}
+.final-award-recipient .final-name{margin:4px 0 3px;font-size:clamp(15px,1.55vw,20px)}
+.final-award-recipient .final-score{font-size:clamp(19px,2.1vw,26px)}
+.final-award-recipient .final-correct{margin-top:3px}
+.final-winner.winner-1{transform:translateY(-12px) scale(1.02)}
+@media(max-width:700px){.final-winner.winner-1{transform:none}.final-award-recipient{padding:8px 0}}
