@@ -183,3 +183,7 @@ main>footer{position:fixed;left:250px;right:0;bottom:0;z-index:30;height:38px;di
 
 /* Hòa Phát logo in the admin sidebar */
 .side .logo img{display:block;width:44px;height:44px;flex:0 0 44px;object-fit:contain;border-radius:8px;background:#fff;padding:3px}
+
+/* Hòa Phát logo in both admin sidebar and login card */
+.logo img{width:42px;height:42px;flex:0 0 42px;object-fit:contain;border-radius:8px;background:#fff;padding:2px}
+.admin-brand img{width:44px;height:44px;flex:0 0 44px;object-fit:contain;border-radius:10px;background:#fff;padding:2px}
