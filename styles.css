@@ -11,12 +11,11 @@
 .live-question-head h2{font-size:21px;line-height:1.5;margin:8px 0 18px}
 .countdown-ring{--time-progress:100%;flex:0 0 86px;width:86px;height:86px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#0870bd var(--time-progress),#dceaf5 0);transition:background .35s linear;box-shadow:0 2px 8px #075a9a18}
 .countdown-ring-inner{width:72px;height:72px;border-radius:50%;background:#fff;display:grid;place-items:center}
-.countdown-pulse{width:12px;height:12px;border-radius:50%;background:#0870bd;box-shadow:0 0 0 8px #0870bd18;animation:timerPulse 1.2s ease-in-out infinite}
+.countdown-number{font-size:25px;font-weight:800;line-height:1;color:#0870bd;font-variant-numeric:tabular-nums}
 .countdown-ring.urgent{background:conic-gradient(#e16b36 var(--time-progress),#f5e4dc 0)}
-.countdown-ring.urgent .countdown-pulse{background:#e16b36;box-shadow:0 0 0 8px #e16b3618}
+.countdown-ring.urgent .countdown-number{color:#e16b36}
 .countdown-ring.urgent .countdown-ring-inner{background:#fffaf7}
 .time-over{font-size:14px;color:#c24b25;white-space:nowrap}
-@keyframes timerPulse{50%{transform:scale(.72);opacity:.65}}
 .question-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 18px}
 .question-option{min-height:58px;border:1px solid #e0e9e2;border-radius:11px;padding:12px;display:flex;align-items:center;gap:10px;font-size:12px}
 .question-option>b{width:28px;height:28px;flex:0 0 28px;border-radius:8px;background:#edf4ef;display:grid;place-items:center;color:#176b3b}
