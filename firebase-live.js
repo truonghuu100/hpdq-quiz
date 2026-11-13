@@ -64,7 +64,7 @@ export const HPDQFirebase={
         cb({started:["question","revealed"].includes(detail.room.status),status:detail.room.status,participants,room:detail.room,question:detail.room.question,questionStartedAt:detail.room.questionStartedAt});
       }catch(e){if(active)err(e);}finally{polling=false;}
     };
-    poll();const timer=setInterval(()=>{if(active)poll();},1500);
+    poll();const timer=setInterval(()=>{if(active)poll();},5000);
     return ()=>{active=false;clearInterval(timer);};
   },
   async joinRoom(code,name){
