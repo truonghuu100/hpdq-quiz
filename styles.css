@@ -187,3 +187,8 @@ main>footer{position:fixed;left:250px;right:0;bottom:0;z-index:30;height:38px;di
 /* Hòa Phát logo in both admin sidebar and login card */
 .logo img{width:42px;height:42px;flex:0 0 42px;object-fit:contain;border-radius:8px;background:#fff;padding:2px}
 .admin-brand img{width:44px;height:44px;flex:0 0 44px;object-fit:contain;border-radius:10px;background:#fff;padding:2px}
+
+/* Official system identity header */
+.system-header-title{flex:1;text-align:center;color:#064b80;font-size:14px;font-weight:800;letter-spacing:.45px;line-height:1.35;padding:0 18px;white-space:nowrap}
+@media(max-width:1050px){.system-header-title{font-size:11px;letter-spacing:0;padding:0 8px;white-space:normal}}
+@media(max-width:600px){.system-header-title{font-size:10px;text-align:left;padding:0 6px}}
