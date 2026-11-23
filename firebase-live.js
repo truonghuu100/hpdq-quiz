@@ -1,5 +1,5 @@
 const API = "https://trainhpdq.onrender.com/api/quiz";
-let adminToken = sessionStorage.getItem("hpdqQuizAdminToken") || "";
+let adminToken = sessionStorage.getItem("hpdqQuizAdminToken") || "";\nlet currentSession = JSON.parse(sessionStorage.getItem("hpdqQuizSession") || "null");
 const roomIds = new Map();
 const headers = (auth=false) => ({ "Content-Type":"application/json", ...(auth && adminToken ? {Authorization:"Bearer "+adminToken} : {}) });
 async function request(path, options={}) {
@@ -9,13 +9,13 @@ async function request(path, options={}) {
   return data;
 }
 export const HPDQFirebase={
-  watchAdminAuth(cb){window.addEventListener("hpdq-quiz-token",e=>{adminToken=e.detail||"";cb({user:adminToken?{username:"admin"}:null,isAdmin:!!adminToken});});cb({user:adminToken?{username:"admin"}:null,isAdmin:!!adminToken});return ()=>{};},
+  watchAdminAuth(cb){const notify=()=>cb({user:adminToken?(currentSession?.user||{username:"admin"}):null,isAdmin:currentSession?.role==="admin",role:currentSession?.role||null,uid:currentSession?.user?.id||null});window.addEventListener("hpdq-quiz-token",e=>{const detail=e.detail||{};adminToken=typeof detail==="string"?detail:detail.token||"";currentSession=typeof detail==="object"?{role:detail.role||"admin",user:detail.user||{id:"admin",username:"admin",displayName:"Quản trị viên"}}:{role:"admin",user:{id:"admin",username:"admin",displayName:"Quản trị viên"}};if(adminToken){sessionStorage.setItem("hpdqQuizAdminToken",adminToken);sessionStorage.setItem("hpdqQuizSession",JSON.stringify(currentSession));}notify();});notify();return ()=>{};},
   async loginAdmin(username,password){
     const data=await request("/admin/login",{method:"POST",body:JSON.stringify({username,password})});
     adminToken=data.token;sessionStorage.setItem("hpdqQuizAdminToken",adminToken);
     return {uid:"admin",isAdmin:true};
   },
-  async logoutAdmin(){adminToken="";sessionStorage.removeItem("hpdqQuizAdminToken");},
+  async logoutAdmin(){adminToken="";currentSession=null;sessionStorage.removeItem("hpdqQuizAdminToken");sessionStorage.removeItem("hpdqQuizSession");},
   async loadCatalog(){return request("/admin/catalog",{auth:true});},
   async saveCatalog(questions,tests){return request("/admin/catalog",{method:"PUT",auth:true,body:JSON.stringify({questions,tests})});},
   async getResults(){return request("/admin/results",{auth:true});},
