@@ -1,5 +1,6 @@
 const API = "https://trainhpdq.onrender.com/api/quiz";
-let adminToken = sessionStorage.getItem("hpdqQuizAdminToken") || "";\nlet currentSession = JSON.parse(sessionStorage.getItem("hpdqQuizSession") || "null");
+let adminToken = sessionStorage.getItem("hpdqQuizAdminToken") || "";
+let currentSession = JSON.parse(sessionStorage.getItem("hpdqQuizSession") || "null");
 const roomIds = new Map();
 const headers = (auth=false) => ({ "Content-Type":"application/json", ...(auth && adminToken ? {Authorization:"Bearer "+adminToken} : {}) });
 async function request(path, options={}) {
@@ -12,12 +13,15 @@ export const HPDQFirebase={
   watchAdminAuth(cb){const notify=()=>cb({user:adminToken?(currentSession?.user||{username:"admin"}):null,isAdmin:currentSession?.role==="admin",role:currentSession?.role||null,uid:currentSession?.user?.id||null});window.addEventListener("hpdq-quiz-token",e=>{const detail=e.detail||{};adminToken=typeof detail==="string"?detail:detail.token||"";currentSession=typeof detail==="object"?{role:detail.role||"admin",user:detail.user||{id:"admin",username:"admin",displayName:"Quản trị viên"}}:{role:"admin",user:{id:"admin",username:"admin",displayName:"Quản trị viên"}};if(adminToken){sessionStorage.setItem("hpdqQuizAdminToken",adminToken);sessionStorage.setItem("hpdqQuizSession",JSON.stringify(currentSession));}notify();});notify();return ()=>{};},
   async loginAdmin(username,password){
     const data=await request("/admin/login",{method:"POST",body:JSON.stringify({username,password})});
-    adminToken=data.token;sessionStorage.setItem("hpdqQuizAdminToken",adminToken);
-    return {uid:"admin",isAdmin:true};
+    adminToken=data.token;currentSession={role:data.role||"admin",user:data.user||{id:"admin",username:"admin"}};sessionStorage.setItem("hpdqQuizAdminToken",adminToken);sessionStorage.setItem("hpdqQuizSession",JSON.stringify(currentSession));
+    return {uid:currentSession.user.id,isAdmin:currentSession.role==="admin",role:currentSession.role,user:currentSession.user};
   },
   async logoutAdmin(){adminToken="";currentSession=null;sessionStorage.removeItem("hpdqQuizAdminToken");sessionStorage.removeItem("hpdqQuizSession");},
-  async loadCatalog(){return request("/admin/catalog",{auth:true});},
-  async saveCatalog(questions,tests){return request("/admin/catalog",{method:"PUT",auth:true,body:JSON.stringify({questions,tests})});},
+  async loadCatalog(ownerId){return request("/admin/catalog"+(ownerId?"?ownerId="+encodeURIComponent(ownerId):""),{auth:true});},
+  async saveCatalog(questions,tests,ownerId){return request("/admin/catalog"+(ownerId?"?ownerId="+encodeURIComponent(ownerId):""),{method:"PUT",auth:true,body:JSON.stringify({questions,tests})});},
+  async listUsers(){return request("/admin/users",{auth:true});},
+  async createUser(user){return request("/admin/users",{method:"POST",auth:true,body:JSON.stringify(user)});},
+  async updateUser(id,patch){return request("/admin/users/"+encodeURIComponent(id),{method:"PATCH",auth:true,body:JSON.stringify(patch)});},
   async getResults(){return request("/admin/results",{auth:true});},
   async createRoom(room){
     const data=await request("/admin/rooms",{method:"POST",auth:true,body:JSON.stringify({title:room.name,rankingSettings:room.rankingSettings||{roundTop:10,finalTop:3}})});
