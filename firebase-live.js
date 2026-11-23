@@ -1,6 +1,8 @@
 const API = "https://trainhpdq.onrender.com/api/quiz";
 let adminToken = sessionStorage.getItem("hpdqQuizAdminToken") || "";
 let currentSession = JSON.parse(sessionStorage.getItem("hpdqQuizSession") || "null");
+// Older single-admin sessions do not carry role metadata; require a fresh sign-in after the role migration.
+if (adminToken && !currentSession) { adminToken = ""; sessionStorage.removeItem("hpdqQuizAdminToken"); }
 const roomIds = new Map();
 const headers = (auth=false) => ({ "Content-Type":"application/json", ...(auth && adminToken ? {Authorization:"Bearer "+adminToken} : {}) });
 async function request(path, options={}) {
